@@ -20,14 +20,28 @@ const { Client } = require('@line/bot-sdk');
 
 // Validate required environment variables (moved to router initialization)
 function validateEnvironmentVariables() {
+  console.log('🔍 檢查環境變數...');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('所有環境變數名稱:', Object.keys(process.env).filter(key => key.includes('LINE')));
+  
   const requiredEnvVars = ['LINE_CHANNEL_ACCESS_TOKEN', 'LINE_CHANNEL_SECRET'];
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  const missingVars = requiredEnvVars.filter(varName => {
+    const exists = !!process.env[varName];
+    console.log(`${varName}: ${exists ? '✅ 存在' : '❌ 缺少'}`);
+    if (exists) {
+      console.log(`${varName} 長度: ${process.env[varName].length}`);
+    }
+    return !exists;
+  });
 
   if (missingVars.length > 0) {
     console.error(`錯誤: 缺少必要的環境變數: ${missingVars.join(', ')}`);
     console.error('請在 Render 平台的 Environment 中設定這些變數');
+    console.error('可用的 LINE 相關環境變數:', Object.keys(process.env).filter(key => key.includes('LINE')));
     throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
   }
+  
+  console.log('✅ 環境變數檢查通過');
 }
 
 // LINE Bot configuration - with validation
@@ -256,6 +270,14 @@ async function replyToLine(replyToken, message) {
 router.post('/webhook', async (req, res) => {
   const startTime = Date.now();
   console.log(`[${new Date().toISOString()}] 收到 Webhook 請求`);
+  
+  // 在處理 webhook 前先檢查環境變數
+  try {
+    validateEnvironmentVariables();
+  } catch (envError) {
+    console.error('環境變數驗證失敗:', envError.message);
+    return res.status(500).send('Environment configuration error');
+  }
   
   try {
     // Step 1: Verify signature (需求 1)

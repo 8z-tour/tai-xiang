@@ -7,6 +7,18 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 // 載入環境變數
 dotenv.config();
 
+// 除錯：檢查 LINE Bot 環境變數
+console.log('🔍 主應用程式環境變數檢查:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('LINE_CHANNEL_ACCESS_TOKEN 存在:', !!process.env.LINE_CHANNEL_ACCESS_TOKEN);
+console.log('LINE_CHANNEL_SECRET 存在:', !!process.env.LINE_CHANNEL_SECRET);
+if (process.env.LINE_CHANNEL_ACCESS_TOKEN) {
+  console.log('ACCESS_TOKEN 長度:', process.env.LINE_CHANNEL_ACCESS_TOKEN.length);
+}
+if (process.env.LINE_CHANNEL_SECRET) {
+  console.log('CHANNEL_SECRET 長度:', process.env.LINE_CHANNEL_SECRET.length);
+}
+
 const app = express();
 const PORT = process.env.PORT || 10000;
 const isProduction = process.env.NODE_ENV === 'production';
