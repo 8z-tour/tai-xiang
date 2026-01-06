@@ -95,13 +95,17 @@ function verifySignature(body, signature) {
 /**
  * Parse user message and identify command type
  * @param {string} messageText - User message text
- * @returns {string} - Command type: 'help', 'list', 'list -a', 'list -d', 'list -d -a', 'list -a -d', 'unknown'
+ * @returns {string} - Command type: 'help', 'leave_system', 'website', 'list', 'list -a', 'list -d', 'list -d -a', 'list -a -d', 'unknown'
  */
 function parseMessage(messageText) {
   const text = messageText.toLowerCase().trim();
   
   if (text === 'help?') {
     return 'help';
+  } else if (text === '請假') {
+    return 'leave_system';
+  } else if (text === '官網') {
+    return 'website';
   } else if (text === 'list -d -a' || text === 'list -a -d') {
     return text; // Return the exact command for switch statement
   } else if (text === 'list -a') {
@@ -192,12 +196,20 @@ function filterRecordsByDate(records, filterType, targetDate) {
 /**
  * Format response message
  * @param {Array} records - Array of leave records
- * @param {string} responseType - Response type: 'help', 'future', 'future-approved', 'today', 'today-approved'
+ * @param {string} responseType - Response type: 'help', 'leave_system', 'website', 'future', 'future-approved', 'today', 'today-approved'
  * @returns {string} - Formatted response message
  */
 function formatResponse(records, responseType) {
   if (responseType === 'help') {
     return 'list -d -a //列出含當日以後請假 ;d當日請假;-a已簽核';
+  }
+  
+  if (responseType === 'leave_system') {
+    return 'https://tai-xiang-backend.onrender.com/leave_system/login';
+  }
+  
+  if (responseType === 'website') {
+    return 'https://tai-xiang-website.onrender.com/';
   }
   
   if (records.length === 0) {
@@ -332,6 +344,30 @@ router.post('/webhook', async (req, res) => {
             console.log('已成功回覆 help 訊息');
           } catch (error) {
             console.error('回覆 help 訊息失敗:', error.message);
+          }
+          continue;
+        }
+        
+        // Step 5.1: Handle leave system link command
+        if (command === 'leave_system') {
+          try {
+            const leaveSystemMessage = formatResponse([], 'leave_system');
+            await replyToLine(replyToken, leaveSystemMessage);
+            console.log('已成功回覆請假系統連結');
+          } catch (error) {
+            console.error('回覆請假系統連結失敗:', error.message);
+          }
+          continue;
+        }
+        
+        // Step 5.2: Handle website link command
+        if (command === 'website') {
+          try {
+            const websiteMessage = formatResponse([], 'website');
+            await replyToLine(replyToken, websiteMessage);
+            console.log('已成功回覆官網連結');
+          } catch (error) {
+            console.error('回覆官網連結失敗:', error.message);
           }
           continue;
         }

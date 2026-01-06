@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc && cp src/line-bot.js dist/line-bot.js && cp -r data dist/",
+    "build": "tsc && (cp src/line-bot.js dist/line-bot.js && cp -r data dist/) || (copy src\\line-bot.js dist\\line-bot.js && xcopy data dist\\data\\ /E /I)",
     "watch": "tsc --watch"
   },
   "dependencies": {
