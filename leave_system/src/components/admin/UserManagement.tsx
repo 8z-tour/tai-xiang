@@ -129,6 +129,48 @@ export const UserManagement: React.FC = () => {
     }
   };
 
+  // 匯出CSV
+  const handleExportCSV = async () => {
+    try {
+      console.log('=== 前端：開始匯出權限資料 CSV ===');
+      
+      const response = await api.post('/admin/users/export', {}, {
+        responseType: 'blob'
+      });
+
+      // 從回應標頭取得檔案名稱，或使用預設名稱
+      const contentDisposition = response.headers['content-disposition'];
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      let filename = `請假系統權限資料${year}${month}${day}.csv`;
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = decodeURIComponent(filenameMatch[1].replace(/['"]/g, ''));
+        }
+      }
+
+      // 建立下載連結
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      console.log('權限資料 CSV 匯出成功:', filename);
+      
+    } catch (err: any) {
+      console.error('匯出 CSV 失敗:', err);
+      setError('匯出失敗，請稍後再試');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -157,12 +199,20 @@ export const UserManagement: React.FC = () => {
         <h2 className="text-lg font-medium text-gray-900">
           {t('userManagement.userList', '用戶列表')}
         </h2>
-        <button
-          onClick={handleAddUser}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          {t('userManagement.addUser', '新增用戶')}
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={handleExportCSV}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            匯出CSV
+          </button>
+          <button
+            onClick={handleAddUser}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {t('userManagement.addUser', '新增用戶')}
+          </button>
+        </div>
       </div>
 
       {/* 用戶列表 */}
