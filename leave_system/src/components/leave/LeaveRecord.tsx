@@ -254,11 +254,11 @@ export const LeaveRecord: React.FC = () => {
       </div>
 
       {/* 統計資料 */}
-      {Object.keys(statistics).length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">{t('leave.records.statistics')}</h3>
-          
-          {/* 已使用假期統計 */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('leave.records.statistics')}</h3>
+        
+        {/* 已使用假期統計 - 只有當有統計資料時才顯示 */}
+        {Object.keys(statistics).length > 0 && (
           <div className="mb-6">
             <h4 className="text-md font-medium text-gray-800 mb-3">{t('leave.records.usedLeave')}</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -277,59 +277,59 @@ export const LeaveRecord: React.FC = () => {
               ))}
             </div>
           </div>
+        )}
 
-          {/* 年度假期額度 */}
-          <div>
-            <h4 className="text-md font-medium text-gray-800 mb-3">{t('leave.records.annualQuotas')}</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                  {t('leave.records.annualLeaveQuota')}
-                </div>
-                <div className="text-2xl font-bold text-green-600">
-                  {annualQuotas.annualLeave}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {t('leave.records.availableQuota')}
-                </div>
+        {/* 年度假期額度 - 始終顯示 */}
+        <div>
+          <h4 className="text-md font-medium text-gray-800 mb-3">{t('leave.records.annualQuotas')}</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                {t('leave.records.annualLeaveQuota')}
               </div>
-              <div className="text-center p-3 bg-orange-50 rounded-lg border border-orange-200">
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                  {t('leave.records.sickLeaveQuota')}
-                </div>
-                <div className="text-2xl font-bold text-orange-600">
-                  {annualQuotas.sickLeave}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {t('leave.records.availableQuota')}
-                </div>
+              <div className="text-2xl font-bold text-green-600">
+                {annualQuotas.annualLeave}
               </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                  {t('leave.records.menstrualLeaveQuota')}
-                </div>
-                <div className="text-2xl font-bold text-purple-600">
-                  {annualQuotas.menstrualLeave}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {t('leave.records.availableQuota')}
-                </div>
+              <div className="text-xs text-gray-500">
+                {t('leave.records.availableQuota')}
               </div>
-              <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-sm font-medium text-gray-700 mb-1">
-                  年度事假(hr)
-                </div>
-                <div className="text-2xl font-bold text-blue-600">
-                  {annualQuotas.personalLeave}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {t('leave.records.availableQuota')}
-                </div>
+            </div>
+            <div className="text-center p-3 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                {t('leave.records.sickLeaveQuota')}
+              </div>
+              <div className="text-2xl font-bold text-orange-600">
+                {annualQuotas.sickLeave}
+              </div>
+              <div className="text-xs text-gray-500">
+                {t('leave.records.availableQuota')}
+              </div>
+            </div>
+            <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                {t('leave.records.menstrualLeaveQuota')}
+              </div>
+              <div className="text-2xl font-bold text-purple-600">
+                {annualQuotas.menstrualLeave}
+              </div>
+              <div className="text-xs text-gray-500">
+                {t('leave.records.availableQuota')}
+              </div>
+            </div>
+            <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                年度事假(hr)
+              </div>
+              <div className="text-2xl font-bold text-blue-600">
+                {annualQuotas.personalLeave}
+              </div>
+              <div className="text-xs text-gray-500">
+                {t('leave.records.availableQuota')}
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* 錯誤訊息 */}
       {error && (

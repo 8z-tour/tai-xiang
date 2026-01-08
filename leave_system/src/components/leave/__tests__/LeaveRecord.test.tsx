@@ -76,7 +76,8 @@ const mockStatistics: LeaveStatistics = {
 const mockAnnualQuotas = {
   annualLeave: 14,
   sickLeave: 30,
-  menstrualLeave: 36
+  menstrualLeave: 36,
+  personalLeave: 14
 };
 
 // Wrapper component for testing
@@ -542,7 +543,7 @@ describe('LeaveRecord Component', () => {
   });
 
   describe('Statistics Display', () => {
-    test('should not display statistics section when no statistics available', async () => {
+    test('should always display statistics section with annual quotas even when no leave statistics available', async () => {
       mockedApi.get.mockResolvedValue({
         data: {
           success: true,
@@ -558,7 +559,28 @@ describe('LeaveRecord Component', () => {
       render(<LeaveRecord />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.queryByText('統計資料')).not.toBeInTheDocument();
+        // Statistics section should always be displayed
+        expect(screen.getByText('統計資料')).toBeInTheDocument();
+        // Annual quotas should be displayed
+        expect(screen.getByText('年度假期額度')).toBeInTheDocument();
+        expect(screen.getByText('14')).toBeInTheDocument(); // annualLeave
+        expect(screen.getByText('30')).toBeInTheDocument(); // sickLeave
+        expect(screen.getByText('36')).toBeInTheDocument(); // menstrualLeave
+      });
+    });
+
+    test('should display both used leave statistics and annual quotas when statistics available', async () => {
+      render(<LeaveRecord />, { wrapper: TestWrapper });
+
+      await waitFor(() => {
+        // Statistics section should be displayed
+        expect(screen.getByText('統計資料')).toBeInTheDocument();
+        // Used leave statistics should be displayed
+        expect(screen.getByText('已使用假期統計')).toBeInTheDocument();
+        expect(screen.getByText('事假')).toBeInTheDocument();
+        expect(screen.getByText('病假')).toBeInTheDocument();
+        // Annual quotas should also be displayed
+        expect(screen.getByText('年度假期額度')).toBeInTheDocument();
       });
     });
 
