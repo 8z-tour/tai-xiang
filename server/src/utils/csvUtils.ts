@@ -88,12 +88,44 @@ export function writeCsvFile(
 
     csvWriter.writeRecords(data)
       .then(() => {
+        // 如果是 UTF-8 編碼，添加 BOM 以確保在 Windows 系統上正確顯示中文
+        if (encoding === 'utf8') {
+          addBomToFile(absolutePath);
+        }
         resolve();
       })
       .catch((error: any) => {
         reject(new Error(`寫入CSV檔案失敗: ${error.message}`));
       });
   });
+}
+
+/**
+ * 為 UTF-8 檔案添加 BOM (Byte Order Mark)
+ * 這樣可以確保在 Windows 系統上正確顯示中文字符
+ * @param filePath 檔案路徑
+ */
+function addBomToFile(filePath: string): void {
+  try {
+    const content = fs.readFileSync(filePath);
+    const bom = Buffer.from([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+    
+    // 檢查檔案是否已經有 BOM
+    if (content.length >= 3 && 
+        content[0] === 0xEF && 
+        content[1] === 0xBB && 
+        content[2] === 0xBF) {
+      // 檔案已經有 BOM，不需要添加
+      return;
+    }
+    
+    // 添加 BOM 到檔案開頭
+    const contentWithBom = Buffer.concat([bom, content]);
+    fs.writeFileSync(filePath, contentWithBom);
+  } catch (error) {
+    console.error('添加 BOM 失敗:', error);
+    // 不拋出錯誤，因為這不是致命錯誤
+  }
 }
 
 /**
@@ -129,6 +161,10 @@ export function appendToCsvFile(
 
     csvWriter.writeRecords(data)
       .then(() => {
+        // 如果是新建檔案且使用 UTF-8 編碼，添加 BOM
+        if (!fileExists && encoding === 'utf8') {
+          addBomToFile(absolutePath);
+        }
         resolve();
       })
       .catch((error: any) => {
