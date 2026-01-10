@@ -6,10 +6,12 @@ import { api } from '../../services/api';
 export const UserManagement: React.FC = () => {
   const { t } = useTranslation();
   const [users, setUsers] = useState<PersonalData[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<PersonalData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [editingUser, setEditingUser] = useState<PersonalData | null>(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
 
   // 載入用戶資料
   const loadUsers = async () => {
@@ -28,6 +30,7 @@ export const UserManagement: React.FC = () => {
       if (response.data.success) {
         console.log('成功載入用戶資料，數量:', response.data.data.length);
         setUsers(response.data.data);
+        setFilteredUsers(response.data.data); // 初始化過濾後的用戶列表
       } else {
         console.error('API 回應失敗:', response.data.message);
         setError(response.data.message || '載入用戶資料失敗');
@@ -56,6 +59,24 @@ export const UserManagement: React.FC = () => {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  // 處理員工篩選
+  const handleEmployeeFilter = (employeeId: string) => {
+    setSelectedEmployeeId(employeeId);
+    if (employeeId === '') {
+      // 顯示全部用戶
+      setFilteredUsers(users);
+    } else {
+      // 篩選特定員工
+      const filtered = users.filter(user => user.employeeId === employeeId);
+      setFilteredUsers(filtered);
+    }
+  };
+
+  // 當用戶列表更新時，重新應用篩選
+  useEffect(() => {
+    handleEmployeeFilter(selectedEmployeeId);
+  }, [users, selectedEmployeeId]);
 
   // 新增用戶
   const handleAddUser = () => {
@@ -194,6 +215,33 @@ export const UserManagement: React.FC = () => {
         </div>
       )}
 
+      {/* 篩選區域 */}
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <label htmlFor="employeeFilter" className="text-sm font-medium text-gray-700">
+            工號篩選：
+          </label>
+          <div className="flex-1 max-w-xs">
+            <select
+              id="employeeFilter"
+              value={selectedEmployeeId}
+              onChange={(e) => handleEmployeeFilter(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">全部</option>
+              {users.map((user) => (
+                <option key={user.employeeId} value={user.employeeId}>
+                  {user.employeeId} - {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="text-sm text-gray-500">
+            顯示 {filteredUsers.length} / {users.length} 筆記錄
+          </div>
+        </div>
+      </div>
+
       {/* 操作按鈕 */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
         <h2 className="text-lg font-medium text-gray-900">
@@ -252,7 +300,7 @@ export const UserManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.employeeId}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {user.employeeId}
@@ -306,7 +354,7 @@ export const UserManagement: React.FC = () => {
 
         {/* 手機版卡片列表 */}
         <div className="md:hidden">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <div key={user.employeeId} className="border-b border-gray-200 p-4">
               <div className="flex justify-between items-start mb-3">
                 <div>

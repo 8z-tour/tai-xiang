@@ -23,7 +23,7 @@ describe('useLanguage', () => {
 
     // Test Chinese translation
     const chineseTitle = result.current.t('system.title');
-    expect(chineseTitle).toBe('員工請假系統');
+    expect(chineseTitle).toBe('員工專區');
   });
 
   test('should change language', async () => {
@@ -37,7 +37,7 @@ describe('useLanguage', () => {
 
     // Test English translation
     const englishTitle = result.current.t('system.title');
-    expect(englishTitle).toBe('Employee Leave System');
+    expect(englishTitle).toBe('Employee Portal');
   });
 
   test('should support Indonesian language', async () => {
@@ -51,6 +51,6 @@ describe('useLanguage', () => {
 
     // Test Indonesian translation
     const indonesianTitle = result.current.t('system.title');
-    expect(indonesianTitle).toBe('Sistem Cuti Karyawan');
+    expect(indonesianTitle).toBe('Portal Karyawan');
   });
 });

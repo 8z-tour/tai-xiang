@@ -7,7 +7,7 @@ describe('Indonesian Language Support', () => {
     await i18n.changeLanguage('id-ID');
     
     // Test key translations
-    expect(i18n.t('system.title')).toBe('Sistem Cuti Karyawan');
+    expect(i18n.t('system.title')).toBe('Portal Karyawan');
     expect(i18n.t('nav.leaveApplication')).toBe('Pengajuan Cuti');
     expect(i18n.t('nav.leaveRecords')).toBe('Catatan Cuti');
     expect(i18n.t('nav.leaveManagement')).toBe('Manajemen Cuti');

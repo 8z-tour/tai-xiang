@@ -56,11 +56,11 @@ describe('Multi-language Property Tests', () => {
       // Verify translation function returns correct language text
       const systemTitle = result.current.t('system.title');
       if (language === 'zh-TW') {
-        expect(systemTitle).toBe('員工請假系統');
+        expect(systemTitle).toBe('員工專區');
       } else if (language === 'en-US') {
-        expect(systemTitle).toBe('Employee Leave System');
+        expect(systemTitle).toBe('Employee Portal');
       } else if (language === 'id-ID') {
-        expect(systemTitle).toBe('Sistem Cuti Karyawan');
+        expect(systemTitle).toBe('Portal Karyawan');
       }
     });
   });
