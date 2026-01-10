@@ -56,6 +56,12 @@ export const Header: React.FC = () => {
                 // 一般頁面導航選單
                 <>
                   <Link 
+                    to="/user/change-password" 
+                    className="text-gray-600 hover:text-gray-800 transition-colors"
+                  >
+                    變更密碼
+                  </Link>
+                  <Link 
                     to="/leave/application" 
                     className="text-gray-600 hover:text-gray-800 transition-colors"
                   >
@@ -178,6 +184,13 @@ export const Header: React.FC = () => {
               ) : (
                 // 一般頁面手機版導航選單
                 <>
+                  <Link 
+                    to="/user/change-password" 
+                    className="block py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    變更密碼
+                  </Link>
                   <Link 
                     to="/leave/application" 
                     className="block py-2 text-gray-600 hover:text-gray-800 transition-colors"

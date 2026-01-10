@@ -8,6 +8,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ErrorNotifications } from './components/common/ErrorNotifications';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { LeaveApplicationPage } from './pages/LeaveApplicationPage';
 import { LeaveRecordPage } from './pages/LeaveRecordPage';
 import { LeaveManagementPage } from './pages/admin/LeaveManagementPage';
@@ -98,6 +99,14 @@ function App() {
                   <Route path="/login" element={<LoginPage />} />
                   
                   {/* 受保護的路由 */}
+                  <Route 
+                    path="/user/change-password" 
+                    element={
+                      <ProtectedRoute>
+                        <ChangePasswordPage />
+                      </ProtectedRoute>
+                    } 
+                  />
                   <Route 
                     path="/leave/application" 
                     element={

@@ -107,6 +107,128 @@ server/
     └── 請假記錄.csv
 ```
 
+### 用戶管理篩選功能
+
+#### 工號篩選下拉選單設計
+
+**組件位置**: `src/components/admin/UserManagement.tsx`
+
+**功能描述**: 在用戶列表上方提供工號篩選下拉選單，允許管理者快速篩選特定員工的資料。
+
+**介面設計**:
+```typescript
+interface EmployeeFilterProps {
+  users: PersonalData[];
+  selectedEmployeeId: string;
+  onFilterChange: (employeeId: string) => void;
+}
+
+interface FilterState {
+  selectedEmployeeId: string;  // 選中的工號，"all" 表示全部
+  filteredUsers: PersonalData[]; // 篩選後的用戶列表
+}
+```
+
+**UI佈局**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 用戶列表                                                     │
+├─────────────────────────────────────────────────────────────┤
+│ 工號篩選: [下拉選單 ▼] [匯出CSV] [新增用戶]                   │
+│           ├─ 全部                                            │
+│           ├─ A001                                           │
+│           ├─ A002                                           │
+│           └─ ...                                            │
+├─────────────────────────────────────────────────────────────┤
+│ [篩選後的用戶表格/卡片列表]                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**篩選邏輯**:
+1. **初始狀態**: 顯示所有用戶，篩選選項預設為"全部"
+2. **選項生成**: 動態從當前用戶列表生成工號選項
+3. **篩選執行**: 選擇特定工號時，僅顯示該工號的用戶資料
+4. **狀態同步**: 新增/刪除用戶後自動更新篩選選項列表
+
+**響應式設計**:
+- **桌面版**: 篩選下拉選單與操作按鈕水平排列
+- **手機版**: 篩選下拉選單與操作按鈕垂直堆疊，保持觸控友善
+
+**實作細節**:
+```typescript
+// 篩選狀態管理
+const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('all');
+const [filteredUsers, setFilteredUsers] = useState<PersonalData[]>(users);
+
+// 篩選邏輯
+const handleFilterChange = (employeeId: string) => {
+  setSelectedEmployeeId(employeeId);
+  if (employeeId === 'all') {
+    setFilteredUsers(users);
+  } else {
+    setFilteredUsers(users.filter(user => user.employeeId === employeeId));
+  }
+};
+
+// 選項生成
+const filterOptions = [
+  { value: 'all', label: '全部' },
+  ...users.map(user => ({
+    value: user.employeeId,
+    label: user.employeeId
+  }))
+];
+```
+
+### 請假紀錄表格欄位順序修正
+
+**組件位置**: `src/components/leave/LeaveRecord.tsx`
+
+**功能描述**: 修正請假紀錄頁面中表格的欄位顯示順序，以提供更直觀的資訊瀏覽體驗。
+
+**欄位順序調整**:
+```
+原始順序: 假別 → 開始時間 → 結束時間 → 請假時數 → 簽核狀況 → 申請時間 → 事由
+修正順序: 簽核狀況 → 開始時間 → 結束時間 → 請假時數 → 假別 → 事由 → 申請時間
+```
+
+**修正邏輯**:
+1. **優先顯示狀態**: 將簽核狀況移至第一欄，讓用戶快速了解請假申請的處理狀態
+2. **時間資訊集中**: 開始時間和結束時間保持相鄰，便於查看請假時間範圍
+3. **相關資訊分組**: 請假時數緊跟時間資訊，假別和事由作為申請詳情分組
+4. **申請時間後置**: 申請時間移至最後，作為記錄的時間戳記資訊
+
+**實作變更**:
+```typescript
+// 表格標題順序調整
+<thead className="bg-gray-50">
+  <tr>
+    <th>{t('leave.records.approvalStatus')}</th>      {/* 簽核狀況 */}
+    <th>{t('leave.application.startTime')}</th>       {/* 開始時間 */}
+    <th>{t('leave.application.endTime')}</th>         {/* 結束時間 */}
+    <th>{t('leave.application.leaveHours')}</th>      {/* 請假時數 */}
+    <th>{t('leave.application.leaveType')}</th>       {/* 假別 */}
+    <th>{t('leave.application.reason')}</th>          {/* 事由 */}
+    <th>{t('leave.records.applicationTime')}</th>     {/* 申請時間 */}
+  </tr>
+</thead>
+
+// 表格資料順序調整
+<tbody>
+  {records.map((record) => (
+    <tr key={record.id}>
+      <td>{/* 簽核狀況 */}</td>
+      <td>{/* 開始時間 */}</td>
+      <td>{/* 結束時間 */}</td>
+      <td>{/* 請假時數 */}</td>
+      <td>{/* 假別 */}</td>
+      <td>{/* 事由 */}</td>
+      <td>{/* 申請時間 */}</td>
+    </tr>
+  ))}
+</tbody>
+```
+
 ## 資料模型
 
 ### 個人資料 (PersonalData)
@@ -438,3 +560,27 @@ enum ErrorCode {
 **屬性 34: 表單欄位順序**
 *對於任何* 請假申請或編輯表單，系統應該按照邏輯順序排列欄位，將假別欄位放置在事由欄位之前
 **驗證: 需求 19.1, 19.2, 19.3**
+
+**屬性 35: 篩選選項完整性**
+*對於任何* 用戶管理頁面的工號篩選下拉選單，應該包含所有現有用戶的工號選項以及"全部"選項
+**驗證: 需求 20.2**
+
+**屬性 36: 工號篩選邏輯**
+*對於任何* 選定的特定工號，用戶列表應該僅顯示該工號對應的用戶資料
+**驗證: 需求 20.3**
+
+**屬性 37: 篩選即時更新**
+*對於任何* 篩選條件變更，顯示的用戶列表應該即時更新以反映新的篩選結果
+**驗證: 需求 20.5**
+
+**屬性 38: 跨平台篩選一致性**
+*對於任何* 篩選條件，桌面版表格和手機版卡片列表應該顯示相同的篩選結果
+**驗證: 需求 20.6**
+
+**屬性 39: 篩選選項同步**
+*對於任何* 用戶新增或刪除操作，篩選下拉選單的選項列表應該自動更新以反映當前的用戶列表
+**驗證: 需求 20.7**
+
+**屬性 40: 請假紀錄欄位順序**
+*對於任何* 請假紀錄表格顯示，欄位應該按照指定順序排列：簽核狀況、開始時間、結束時間、請假時數、假別、事由、申請時間
+**驗證: 需求 21.1, 21.2, 21.3**

@@ -9,7 +9,79 @@ import { writeCsvFile } from '../utils/csvUtils';
 const router = express.Router();
 const personalDataService = new PersonalDataService();
 
-// 所有路由都需要管理者權限
+// 變更密碼路由 - 所有已認證用戶都可以使用
+router.put('/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userEmployeeId = req.user?.employeeId;
+
+    console.log('=== 變更密碼 API 被調用 ===');
+    console.log('用戶工號:', userEmployeeId);
+
+    // 驗證必填欄位
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: '目前密碼和新密碼都是必填的'
+      });
+    }
+
+    // 驗證新密碼長度
+    if (newPassword.length < 4) {
+      return res.status(400).json({
+        success: false,
+        message: '新密碼至少需要4個字符'
+      });
+    }
+
+    // 檢查目前密碼和新密碼是否相同
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: '新密碼不能與目前密碼相同'
+      });
+    }
+
+    // 獲取用戶資料
+    const user = await personalDataService.findByEmployeeId(userEmployeeId!);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: '用戶不存在'
+      });
+    }
+
+    // 驗證目前密碼
+    if (user.password !== currentPassword) {
+      return res.status(400).json({
+        success: false,
+        message: '目前密碼不正確'
+      });
+    }
+
+    // 更新密碼
+    await personalDataService.updateUser(userEmployeeId!, {
+      ...user,
+      password: newPassword
+    });
+
+    console.log('密碼變更成功:', userEmployeeId);
+
+    res.json({
+      success: true,
+      message: '密碼變更成功'
+    });
+
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: '密碼變更失敗，請稍後再試'
+    });
+  }
+});
+
+// 所有其他路由都需要管理者權限
 router.use(authenticateToken);
 router.use(adminMiddleware);
 
