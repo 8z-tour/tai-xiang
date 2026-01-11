@@ -41,6 +41,7 @@ router.get('/leave/records', authenticateToken, requireAdmin, async (req: Reques
   try {
     const {
       employeeId,
+      selectedMonth,
       startMonth,
       endMonth,
       approvalStatus,
@@ -52,6 +53,10 @@ router.get('/leave/records', authenticateToken, requireAdmin, async (req: Reques
     
     if (employeeId) {
       queryParams.employeeId = employeeId as string;
+    }
+    
+    if (selectedMonth) {
+      queryParams.selectedMonth = selectedMonth as string;
     }
     
     if (startMonth) {
@@ -335,6 +340,7 @@ router.post('/leave/export', authenticateToken, requireAdmin, async (req: Reques
   try {
     const {
       employeeId,
+      selectedMonth,
       startMonth,
       endMonth,
       approvalStatus,
@@ -346,6 +352,10 @@ router.post('/leave/export', authenticateToken, requireAdmin, async (req: Reques
     
     if (employeeId) {
       queryParams.employeeId = employeeId;
+    }
+    
+    if (selectedMonth) {
+      queryParams.selectedMonth = selectedMonth;
     }
     
     if (startMonth) {

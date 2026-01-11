@@ -172,6 +172,7 @@ router.get('/records', authenticateToken, async (req, res) => {
   try {
     const user = req.user!;
     const {
+      selectedMonth,
       startMonth,
       endMonth,
       approvalStatus,
@@ -181,17 +182,22 @@ router.get('/records', authenticateToken, async (req, res) => {
     // 查詢該員工的請假記錄
     const records = await queryLeaveRecords({
       employeeId: user.employeeId,
+      selectedMonth: selectedMonth as string,
       startMonth: startMonth as string,
       endMonth: endMonth as string,
       approvalStatus: approvalStatus as ApprovalStatus,
       leaveType: leaveType as LeaveType
     });
 
-    // 計算統計資料
+    // 計算統計資料 - 固定為當年度資料
+    const currentYear = new Date().getFullYear();
+    const yearStartMonth = `${currentYear}-01`;
+    const yearEndMonth = `${currentYear}-12`;
+    
     const statistics = await getLeaveStatisticsByEmployee(
       user.employeeId,
-      startMonth as string,
-      endMonth as string
+      yearStartMonth,
+      yearEndMonth
     );
 
     // 獲取年度假期額度

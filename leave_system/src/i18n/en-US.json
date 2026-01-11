@@ -72,10 +72,12 @@
     "records": {
       "title": "Leave Records",
       "filter": "Filter",
+      "selectedMonth": "Month",
       "startMonth": "Start Month",
       "endMonth": "End Month",
       "approvalStatus": "Approval Status",
       "statistics": "Statistics",
+      "statisticsNote": "(Includes \"Pending\" and \"Approved\" records only)",
       "totalHours": "Total Hours",
       "noRecords": "No matching leave records found",
       "usedLeave": "Used Leave",
@@ -83,6 +85,7 @@
       "annualLeaveQuota": "Annual Leave (hr)",
       "sickLeaveQuota": "Sick Leave (hr)",
       "menstrualLeaveQuota": "Menstrual Leave (hr)",
+      "personalLeaveQuota": "Personal Leave (hr)",
       "availableQuota": "Available Quota",
       "recordsCount": "records",
       "applicationTime": "Application Time"

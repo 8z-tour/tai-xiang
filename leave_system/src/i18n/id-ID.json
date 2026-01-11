@@ -72,10 +72,12 @@
     "records": {
       "title": "Catatan Cuti",
       "filter": "Filter",
+      "selectedMonth": "Bulan",
       "startMonth": "Bulan Mulai",
       "endMonth": "Bulan Selesai",
       "approvalStatus": "Status Persetujuan",
       "statistics": "Statistik",
+      "statisticsNote": "(Hanya termasuk catatan \"Menunggu\" dan \"Disetujui\")",
       "totalHours": "Total Jam",
       "noRecords": "Tidak ada catatan cuti yang sesuai",
       "usedLeave": "Cuti yang Digunakan",
@@ -83,6 +85,7 @@
       "annualLeaveQuota": "Cuti Tahunan (jam)",
       "sickLeaveQuota": "Cuti Sakit (jam)",
       "menstrualLeaveQuota": "Cuti Menstruasi (jam)",
+      "personalLeaveQuota": "Cuti Pribadi (jam)",
       "availableQuota": "Kuota Tersedia",
       "recordsCount": "catatan",
       "applicationTime": "Waktu Pengajuan"

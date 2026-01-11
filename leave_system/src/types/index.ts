@@ -77,14 +77,16 @@ export interface LeaveApplicationFormErrors {
 }
 
 export interface LeaveQueryFormData {
-  startMonth?: string;  // YYYY-MM
-  endMonth?: string;    // YYYY-MM
+  selectedMonth?: string;  // YYYY-MM
   approvalStatus?: ApprovalStatus | '';
   leaveType?: LeaveType | '';
 }
 
-export interface AdminLeaveQueryFormData extends LeaveQueryFormData {
+export interface AdminLeaveQueryFormData {
   employeeId?: string;
+  selectedMonth?: string;  // YYYY-MM
+  approvalStatus?: ApprovalStatus | '';
+  leaveType?: LeaveType | '';
 }
 
 // 使用者狀態

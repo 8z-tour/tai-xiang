@@ -72,10 +72,12 @@
     "records": {
       "title": "請假紀錄",
       "filter": "篩選條件",
+      "selectedMonth": "年月",
       "startMonth": "起始年月",
       "endMonth": "結束年月",
       "approvalStatus": "簽核狀態",
       "statistics": "統計資料",
+      "statisticsNote": "(只包含\"簽核中\"、\"已審核\"紀錄)",
       "totalHours": "總時數",
       "noRecords": "無符合條件的請假記錄",
       "usedLeave": "已使用假期",
@@ -83,6 +85,7 @@
       "annualLeaveQuota": "年度特休(hr)",
       "sickLeaveQuota": "年度病假(hr)",
       "menstrualLeaveQuota": "年度生理假(hr)",
+      "personalLeaveQuota": "年度事假(hr)",
       "availableQuota": "可用額度",
       "recordsCount": "筆記錄",
       "applicationTime": "申請時間"

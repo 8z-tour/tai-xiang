@@ -186,19 +186,25 @@ export async function queryLeaveRecords(params: LeaveQueryParams): Promise<Leave
     }
 
     // 根據日期範圍篩選
-    if (params.startMonth || params.endMonth) {
+    if (params.selectedMonth || params.startMonth || params.endMonth) {
       records = records.filter(record => {
         const recordDate = new Date(record.leaveDate);
         const recordMonth = recordDate.toISOString().substring(0, 7); // YYYY-MM
 
         let inRange = true;
 
-        if (params.startMonth) {
-          inRange = inRange && recordMonth >= params.startMonth;
-        }
+        // 如果有 selectedMonth，只篩選該月份
+        if (params.selectedMonth) {
+          inRange = recordMonth === params.selectedMonth;
+        } else {
+          // 向後兼容：使用 startMonth 和 endMonth
+          if (params.startMonth) {
+            inRange = inRange && recordMonth >= params.startMonth;
+          }
 
-        if (params.endMonth) {
-          inRange = inRange && recordMonth <= params.endMonth;
+          if (params.endMonth) {
+            inRange = inRange && recordMonth <= params.endMonth;
+          }
         }
 
         return inRange;

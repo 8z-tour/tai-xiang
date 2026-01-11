@@ -22,8 +22,7 @@ export const LeaveRecord: React.FC = () => {
   const { user } = useAuth();
   
   const [filterData, setFilterData] = useState<LeaveQueryFormData>({
-    startMonth: '',
-    endMonth: '',
+    selectedMonth: '',
     approvalStatus: '',
     leaveType: '',
   });
@@ -73,11 +72,8 @@ export const LeaveRecord: React.FC = () => {
     try {
       const params = new URLSearchParams();
       
-      if (filterData.startMonth) {
-        params.append('startMonth', filterData.startMonth);
-      }
-      if (filterData.endMonth) {
-        params.append('endMonth', filterData.endMonth);
+      if (filterData.selectedMonth) {
+        params.append('selectedMonth', filterData.selectedMonth);
       }
       if (filterData.approvalStatus) {
         params.append('approvalStatus', filterData.approvalStatus);
@@ -133,8 +129,7 @@ export const LeaveRecord: React.FC = () => {
   // 重設篩選條件
   const handleReset = () => {
     setFilterData({
-      startMonth: '',
-      endMonth: '',
+      selectedMonth: '',
       approvalStatus: '',
       leaveType: '',
     });
@@ -158,104 +153,10 @@ export const LeaveRecord: React.FC = () => {
         </div>
       </div>
 
-      {/* 篩選表單 */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('leave.records.filter')}</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          {/* 起始年月 */}
-          <div>
-            <label htmlFor="startMonth" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.records.startMonth')}
-            </label>
-            <input
-              type="month"
-              id="startMonth"
-              name="startMonth"
-              value={filterData.startMonth}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* 結束年月 */}
-          <div>
-            <label htmlFor="endMonth" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.records.endMonth')}
-            </label>
-            <input
-              type="month"
-              id="endMonth"
-              name="endMonth"
-              value={filterData.endMonth}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* 簽核狀態 */}
-          <div>
-            <label htmlFor="approvalStatus" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.records.approvalStatus')}
-            </label>
-            <select
-              id="approvalStatus"
-              name="approvalStatus"
-              value={filterData.approvalStatus}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {approvalStatusOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 假別 */}
-          <div>
-            <label htmlFor="leaveType" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.application.leaveType')}
-            </label>
-            <select
-              id="leaveType"
-              name="leaveType"
-              value={filterData.leaveType}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {leaveTypeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* 操作按鈕 */}
-        <div className="flex space-x-3">
-          <button
-            onClick={handleSearch}
-            disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400"
-          >
-            {isLoading ? t('common.loading') : t('common.search')}
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={isLoading}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-400"
-          >
-            {t('common.reset')}
-          </button>
-        </div>
-      </div>
-
       {/* 統計資料 */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('leave.records.statistics')}</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('leave.records.statistics')}({new Date().getFullYear()})</h3>
+        <p className="text-sm text-gray-600 mb-4">{t('leave.records.statisticsNote')}</p>
         
         {/* 已使用假期統計 - 只有當有統計資料時才顯示 */}
         {Object.keys(statistics).length > 0 && (
@@ -318,7 +219,7 @@ export const LeaveRecord: React.FC = () => {
             </div>
             <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
               <div className="text-sm font-medium text-gray-700 mb-1">
-                年度事假(hr)
+                {t('leave.records.personalLeaveQuota')}
               </div>
               <div className="text-2xl font-bold text-blue-600">
                 {annualQuotas.personalLeave}
@@ -338,88 +239,171 @@ export const LeaveRecord: React.FC = () => {
         </div>
       )}
 
-      {/* 請假記錄表格 */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">
-            {t('leave.records.title')} ({records.length} {t('leave.records.recordsCount')})
-          </h3>
-        </div>
+      {/* 篩選條件和請假記錄 - 統一背景 */}
+      <div className="bg-gray-50 p-6 rounded-lg">
+        {/* 篩選表單 */}
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">{t('leave.records.filter')}</h3>
         
-        {isLoading ? (
-          <div className="p-6 text-center">
-            <p className="text-gray-600">{t('common.loading')}</p>
-          </div>
-        ) : records.length === 0 ? (
-          <div className="p-6 text-center">
-            <p className="text-gray-600">{t('leave.records.noRecords')}</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.records.approvalStatus')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.application.startTime')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.application.endTime')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.application.leaveHours')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.application.leaveType')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.application.reason')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('leave.records.applicationTime')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {records.map((record) => (
-                  <tr key={record.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        record.approvalStatus === '已審核' 
-                          ? 'bg-green-100 text-green-800'
-                          : record.approvalStatus === '已退回'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {t(`leave.status.${record.approvalStatus}`)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDateTime(record.leaveDate, record.startTime)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDateTime(record.endDate, record.endTime)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {record.leaveHours} {t('leave.application.hours')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {t(`leave.types.${record.leaveType}`)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                      {record.reason || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatApplicationDateTime(record.applicationDateTime)}
-                    </td>
-                  </tr>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            {/* 年月 */}
+            <div>
+              <label htmlFor="selectedMonth" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('leave.records.selectedMonth')}
+              </label>
+              <input
+                type="month"
+                id="selectedMonth"
+                name="selectedMonth"
+                value={filterData.selectedMonth}
+                onChange={handleFilterChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* 簽核狀態 */}
+            <div>
+              <label htmlFor="approvalStatus" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('leave.records.approvalStatus')}
+              </label>
+              <select
+                id="approvalStatus"
+                name="approvalStatus"
+                value={filterData.approvalStatus}
+                onChange={handleFilterChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {approvalStatusOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
-              </tbody>
-            </table>
+              </select>
+            </div>
+
+            {/* 假別 */}
+            <div>
+              <label htmlFor="leaveType" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('leave.application.leaveType')}
+              </label>
+              <select
+                id="leaveType"
+                name="leaveType"
+                value={filterData.leaveType}
+                onChange={handleFilterChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {leaveTypeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        )}
+
+          {/* 操作按鈕 */}
+          <div className="flex space-x-3">
+            <button
+              onClick={handleSearch}
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400"
+            >
+              {isLoading ? t('common.loading') : t('common.search')}
+            </button>
+            <button
+              onClick={handleReset}
+              disabled={isLoading}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:bg-gray-400"
+            >
+              {t('common.reset')}
+            </button>
+          </div>
+        </div>
+
+        {/* 請假記錄表格 */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900">
+              {t('leave.records.title')} ({records.length} {t('leave.records.recordsCount')})
+            </h3>
+          </div>
+          
+          {isLoading ? (
+            <div className="p-6 text-center">
+              <p className="text-gray-600">{t('common.loading')}</p>
+            </div>
+          ) : records.length === 0 ? (
+            <div className="p-6 text-center">
+              <p className="text-gray-600">{t('leave.records.noRecords')}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.records.approvalStatus')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.application.startTime')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.application.endTime')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.application.leaveHours')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.application.leaveType')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.application.reason')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('leave.records.applicationTime')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {records.map((record) => (
+                    <tr key={record.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          record.approvalStatus === '已審核' 
+                            ? 'bg-green-100 text-green-800'
+                            : record.approvalStatus === '已退回'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {t(`leave.status.${record.approvalStatus}`)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDateTime(record.leaveDate, record.startTime)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDateTime(record.endDate, record.endTime)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {record.leaveHours} {t('leave.application.hours')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {t(`leave.types.${record.leaveType}`)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                        {record.reason || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatApplicationDateTime(record.applicationDateTime)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

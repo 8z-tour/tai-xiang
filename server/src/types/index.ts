@@ -71,8 +71,9 @@ export interface LeaveApplicationRequest {
 
 export interface LeaveQueryParams {
   employeeId?: string;
-  startMonth?: string;  // YYYY-MM
-  endMonth?: string;    // YYYY-MM
+  selectedMonth?: string;  // YYYY-MM
+  startMonth?: string;  // YYYY-MM (保留向後兼容)
+  endMonth?: string;    // YYYY-MM (保留向後兼容)
   approvalStatus?: ApprovalStatus;
   leaveType?: LeaveType;
 }

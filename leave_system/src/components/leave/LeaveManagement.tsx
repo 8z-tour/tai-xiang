@@ -44,8 +44,7 @@ export const LeaveManagement: React.FC = () => {
   
   const [filterData, setFilterData] = useState<AdminLeaveQueryFormData>({
     employeeId: '',
-    startMonth: '',
-    endMonth: '',
+    selectedMonth: '',
     approvalStatus: '',
     leaveType: '',
   });
@@ -103,11 +102,8 @@ export const LeaveManagement: React.FC = () => {
       if (filterData.employeeId) {
         params.append('employeeId', filterData.employeeId);
       }
-      if (filterData.startMonth) {
-        params.append('startMonth', filterData.startMonth);
-      }
-      if (filterData.endMonth) {
-        params.append('endMonth', filterData.endMonth);
+      if (filterData.selectedMonth) {
+        params.append('selectedMonth', filterData.selectedMonth);
       }
       if (filterData.approvalStatus) {
         params.append('approvalStatus', filterData.approvalStatus);
@@ -162,8 +158,7 @@ export const LeaveManagement: React.FC = () => {
   const handleReset = () => {
     setFilterData({
       employeeId: '',
-      startMonth: '',
-      endMonth: '',
+      selectedMonth: '',
       approvalStatus: '',
       leaveType: '',
     });
@@ -346,8 +341,7 @@ export const LeaveManagement: React.FC = () => {
     try {
       const exportData = {
         employeeId: filterData.employeeId || undefined,
-        startMonth: filterData.startMonth || undefined,
-        endMonth: filterData.endMonth || undefined,
+        selectedMonth: filterData.selectedMonth || undefined,
         approvalStatus: filterData.approvalStatus || undefined,
         leaveType: filterData.leaveType || undefined,
       };
@@ -419,31 +413,16 @@ export const LeaveManagement: React.FC = () => {
             />
           </div>
 
-          {/* 起始年月 */}
+          {/* 年月 */}
           <div>
-            <label htmlFor="startMonth" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.records.startMonth')}
+            <label htmlFor="selectedMonth" className="block text-sm font-medium text-gray-700 mb-1">
+              {t('leave.records.selectedMonth')}
             </label>
             <input
               type="month"
-              id="startMonth"
-              name="startMonth"
-              value={filterData.startMonth}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* 結束年月 */}
-          <div>
-            <label htmlFor="endMonth" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('leave.records.endMonth')}
-            </label>
-            <input
-              type="month"
-              id="endMonth"
-              name="endMonth"
-              value={filterData.endMonth}
+              id="selectedMonth"
+              name="selectedMonth"
+              value={filterData.selectedMonth}
               onChange={handleFilterChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
